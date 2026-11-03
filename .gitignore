@@ -1,0 +1,92 @@
+# --- Python / FastAPI backend ---
+backend/.venv/
+backend/__pycache__/
+**/__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+!.env.production.example
+backend/.env
+*.egg-info/
+
+# --- Flutter / Dart (apps/agal) ---
+apps/**/.dart_tool/
+apps/**/.flutter-plugins
+apps/**/.flutter-plugins-dependencies
+apps/**/.packages
+apps/**/build/
+apps/**/*.iml
+apps/**/.idea/
+apps/**/android/.gradle/
+apps/**/android/local.properties
+apps/**/ios/Flutter/Flutter.framework
+apps/**/ios/Pods/
+apps/**/macos/Flutter/ephemeral/
+apps/**/windows/flutter/ephemeral/
+apps/**/linux/flutter/ephemeral/
+apps/**/.symlinks/
+# Keep the application lockfile for reproducible Flutter builds.
+
+# --- Node / Hardhat (contract) ---
+contract/node_modules/
+contract/artifacts/
+contract/cache/
+contract/coverage/
+contract/typechain-types/
+contract/.env
+
+# --- Next.js (web) ---
+web/node_modules/
+web/.next/
+web/out/
+web/.env*.local
+
+# --- Vercel CLI (local project-link cache, machine-specific) ---
+backend/.vercel/
+web/.vercel/
+
+# --- Editors / OS ---
+.vscode/
+.DS_Store
+*.log
+
+# --- Test coverage output (backend) ---
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# --- Credentials and signing material ---
+*.env
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+.npmrc
+.pypirc
+.netrc
+.git-credentials
+service-account*.json
+service_account*.json
+credentials*.json
+
+# --- Local databases, binaries, and tool caches ---
+*.db
+*.sqlite
+*.sqlite3
+*.apk
+*.aab
+*.tsbuildinfo
+**/node_modules/
+**/.venv/
+**/.vercel/
+**/.ruff_cache/
+**/.gradle/
+**/.cxx/
+Thumbs.db
+Desktop.ini

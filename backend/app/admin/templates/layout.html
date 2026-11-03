@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block head %}<script src="/admin/static/admin.js" defer></script>{% endblock %}
+
+{% block body %}
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="shell">
+  <aside class="sidebar no-print" id="sidebar" aria-label="Admin navigation">
+    <div class="sidebar-brand">
+      <span class="brand-name">{{ app_name }}</span>
+      <span class="brand-sub">Super Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% for section in nav_sections %}
+      <div class="nav-section">
+        {% if section.title %}<div class="nav-heading">{{ section.title }}</div>{% endif %}
+        <ul>
+          {% for item in section.items %}
+          <li>
+            {% if item.enabled %}
+            <a class="nav-link{% if item.key == active %} is-active{% endif %}" href="{{ item.href }}"
+               {% if item.key == active %}aria-current="page"{% endif %}>{{ item.label }}</a>
+            {% else %}
+            <span class="nav-link is-disabled" aria-disabled="true">{{ item.label }}<span class="badge">Soon</span></span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="signed-in" title="{{ admin_email }}">{{ admin_email }}</div>
+      <form method="post" action="/admin/logout">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-block">Sign out</button>
+      </form>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop no-print" data-sidebar-close hidden></div>
+
+  <div class="content">
+    <header class="topbar no-print">
+      <button type="button" class="icon-btn" data-sidebar-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <span class="topbar-brand">{{ app_name }}</span>
+    </header>
+
+    <div class="toasts no-print" role="region" aria-label="Notifications">
+      {% for level, message in flashes %}
+      <div class="toast toast-{{ level }}" role="{{ 'alert' if level == 'error' else 'status' }}" data-level="{{ level }}">
+        <span>{{ message }}</span>
+        <button type="button" class="toast-close" data-toast-close aria-label="Dismiss">&times;</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <main id="main" class="main">
+      <div class="page-header">
+        <h1>{{ title }}</h1>
+        <div class="page-actions no-print">{% block actions %}{% endblock %}</div>
+      </div>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<dialog id="confirm-dialog" class="dialog no-print" aria-labelledby="confirm-title">
+  <form method="dialog">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-message" class="muted"></p>
+    <div class="dialog-actions">
+      <button type="submit" value="cancel" class="btn">Cancel</button>
+      <button type="submit" value="confirm" class="btn btn-danger" id="confirm-accept">Confirm</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

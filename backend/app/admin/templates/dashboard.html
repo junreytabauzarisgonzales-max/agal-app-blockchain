@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{# One horizontal bar per category. <progress> keeps this CSP-safe (no inline width styles)
+   and gives screen readers the value; the count is always printed, never colour-only. #}
+{% macro bars(rows, total, tone="") %}
+<ul class="bars">
+  {% for row in rows %}
+  <li>
+    <span class="bar-label">{{ row.label }}</span>
+    <progress class="bar {{ tone }} {{ tone ~ '-' ~ row.key if tone == 'chain' }}" max="{{ total if total else 1 }}" value="{{ row.count }}"
+              title="{{ row.count|num }} of {{ total|num }}" aria-label="{{ row.label }}: {{ row.count|num }}"></progress>
+    <span class="bar-value">{{ row.count|num }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro chain_badge(status) %}
+  {% if status == "anchored" %}<span class="badge badge-ok"><span aria-hidden="true">&#10003;</span> Anchored</span>
+  {% elif status == "failed" %}<span class="badge badge-err"><span aria-hidden="true">&#10007;</span> Failed</span>
+  {% else %}<span class="badge badge-warn"><span aria-hidden="true">&#8230;</span> Pending</span>{% endif %}
+{% endmacro %}
+
+{% block actions %}
+{% if stats %}<span class="muted small">Updated {{ stats.generated_at|dt }}</span>{% endif %}
+<a class="btn" href="/admin">Refresh</a>
+{% endblock %}
+
+{% block content %}
+{% if not stats %}
+<section class="card empty-state" role="alert">
+  <h2>Could not load statistics</h2>
+  <p class="muted">The database did not respond as expected. Check that it is running and reachable, then refresh.</p>
+  <p><a class="btn btn-primary" href="/admin">Try again</a></p>
+</section>
+{% else %}
+
+{% if stats.events_failed %}
+<div class="callout callout-err" role="alert">
+  <span aria-hidden="true">&#10007;</span>
+  <span><strong>{{ stats.events_failed|num }}</strong> custody event{{ '' if stats.events_failed == 1 else 's' }} failed to anchor on-chain and need a retry.</span>
+</div>
+{% endif %}
+
+<section class="stat-grid" aria-label="Key figures">
+  <div class="stat">
+    <div class="stat-label">Users</div>
+    <div class="stat-value">{{ stats.users_total|num }}</div>
+    <div class="stat-sub">{{ stats.users_active|num }} active &middot; {{ stats.users_inactive|num }} inactive</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Harvest Batches</div>
+    <div class="stat-value">{{ stats.batches_total|num }}</div>
+    <div class="stat-sub">{{ stats.batches_total_kg|num }} kg estimated</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Custody Events</div>
+    <div class="stat-value">{{ stats.events_total|num }}</div>
+    <div class="stat-sub">{{ stats.events_last_24h|num }} in the last 24 h</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Price Records</div>
+    <div class="stat-value">{{ stats.prices_total|num }}</div>
+    <div class="stat-sub">Latest price: {{ stats.prices_latest|dt }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Messages</div>
+    <div class="stat-value">{{ stats.messages_total|num }}</div>
+    <div class="stat-sub">{{ stats.messages_unread|num }} unread</div>
+  </div>
+</section>
+
+<section class="panel-grid" aria-label="Breakdowns">
+  <div class="card panel">
+    <h2>Users by role</h2>
+    {{ bars(stats.users_by_role, stats.users_total) }}
+  </div>
+  <div class="card panel">
+    <h2>Batches by status</h2>
+    {{ bars(stats.batches_by_status, stats.batches_total) }}
+  </div>
+  <div class="card panel">
+    <h2>On-chain anchoring</h2>
+    {{ bars(stats.events_by_chain, stats.events_total, "chain") }}
+  </div>
+</section>
+
+<section class="card panel">
+  <h2>Recent custody events</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th scope="col">Occurred</th><th scope="col">Event</th><th scope="col">By</th><th scope="col">Batch</th><th scope="col">On-chain</th></tr>
+      </thead>
+      <tbody>
+        {% for e in stats.recent_events %}
+        <tr>
+          <td class="nowrap">{{ e.occurred_at|dt }}</td>
+          <td>{{ e.event_type|label }}</td>
+          <td>{{ e.actor_name }} <span class="muted">({{ e.actor_role|label }})</span></td>
+          <td class="mono" title="{{ e.batch_id }}">{{ e.batch_id[:8] }}</td>
+          <td>{{ chain_badge(e.on_chain_status) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="table-empty">No custody events yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card panel">
+  <h2>Newest users</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th scope="col">Name</th><th scope="col">Role</th><th scope="col">Status</th><th scope="col">Joined</th></tr>
+      </thead>
+      <tbody>
+        {% for u in stats.recent_users %}
+        <tr>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.role|label }}</td>
+          <td>{% if u.is_active %}<span class="badge badge-ok">Active</span>{% else %}<span class="badge">Inactive</span>{% endif %}</td>
+          <td class="nowrap">{{ u.created_at|dt }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="table-empty">No users yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

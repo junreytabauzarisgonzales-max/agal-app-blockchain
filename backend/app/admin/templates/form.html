@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form method="post" action="{{ action }}" class="card form" autocomplete="off">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  {% if errors.get("_form") %}<div class="alert alert-error" role="alert">{{ errors["_form"] }}</div>{% endif %}
+  {% if errors and not errors.get("_form") %}<div class="alert alert-error" role="alert">Please fix the highlighted fields.</div>{% endif %}
+
+  {% for f in fields %}
+  {% set err = errors.get(f.name) %}
+  {% set is_locked = f.name in locked %}
+  <div class="field{% if err %} has-error{% endif %}{% if f.type == 'checkbox' %} field-check{% endif %}">
+    {% if f.type == "checkbox" %}
+      <label for="f-{{ f.name }}" class="check-label">
+        <input type="checkbox" id="f-{{ f.name }}" name="{{ f.name }}" {% if values.get(f.name) %}checked{% endif %}>
+        {{ f.label }}
+      </label>
+    {% else %}
+      <label for="f-{{ f.name }}">{{ f.label }}{% if f.required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+      {% if f.type == "select" %}
+        <select id="f-{{ f.name }}" name="{{ f.name }}" {% if f.required %}required{% endif %} {% if is_locked %}disabled{% endif %}>
+          {% for value, label in f.options %}<option value="{{ value }}" {% if values.get(f.name) == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      {% elif f.type == "textarea" %}
+        <textarea id="f-{{ f.name }}" name="{{ f.name }}" rows="4">{{ values.get(f.name, "") }}</textarea>
+      {% else %}
+        <input id="f-{{ f.name }}" name="{{ f.name }}" type="{{ f.type }}"
+               {% if f.type != "password" %}value="{{ values.get(f.name, '') }}"{% endif %}
+               {% if f.required %}required{% endif %} {% if f.step %}step="{{ f.step }}"{% endif %}
+               {% if f.autocomplete %}autocomplete="{{ f.autocomplete }}"{% endif %}>
+      {% endif %}
+    {% endif %}
+    {% if err %}<p class="field-error" role="alert">{{ err }}</p>{% endif %}
+    {% if is_locked %}<p class="hint">Locked while this {{ res.singular }} has related records.</p>
+    {% elif f.help %}<p class="hint">{{ f.help }}</p>{% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="form-actions">
+    <a class="btn" href="{{ cancel_url }}">Cancel</a>
+    <button type="submit" class="btn btn-primary">{{ "Create" if obj is none else "Save changes" }}</button>
+  </div>
+</form>
+{% endblock %}

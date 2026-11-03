@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as m %}
+
+{% block actions %}
+{% if rows %}
+<a class="btn" href="{{ res.base_url }}/print{{ lq.qs() }}" target="_blank" rel="noopener">Print results</a>
+{% if page.pages > 1 %}<a class="btn" href="{{ res.base_url }}/print{{ lq.qs(page=page.number, scope='page') }}" target="_blank" rel="noopener">Print this page</a>{% endif %}
+{% endif %}
+{% if res.can_create %}<a class="btn btn-primary" href="{{ res.base_url }}/new">New {{ res.singular }}</a>{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if res.search or res.visible_filters %}
+<form method="get" action="{{ res.base_url }}" class="card filters no-print" role="search" aria-label="Search and filter {{ res.label|lower }}">
+  <div class="filter-grid">
+    {% if res.search %}
+    <div class="field field-grow">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q" value="{{ lq.q }}" maxlength="100" placeholder="{{ res.search_hint }}">
+    </div>
+    {% endif %}
+    {% for f in res.visible_filters %}
+    <div class="field">
+      <label for="flt-{{ f.name }}">{{ f.label }}</label>
+      {% if f.kind in ("date_from", "date_to") %}
+      <input id="flt-{{ f.name }}" type="date" name="{{ f.name }}" value="{{ lq.filters.get(f.name, '') }}">
+      {% else %}
+      <select id="flt-{{ f.name }}" name="{{ f.name }}">
+        <option value="">All</option>
+        {% for value, label in f.options %}<option value="{{ value }}" {% if lq.filters.get(f.name) == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+      {% endif %}
+    </div>
+    {% endfor %}
+    <div class="field">
+      <label for="per_page">Rows</label>
+      <select id="per_page" name="per_page">
+        {% for n in per_page_choices %}<option value="{{ n }}" {% if lq.per_page == n %}selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+
+  {# Keep filters that have no control (reached via "View all" links) and the current sort across submits. #}
+  {% for f in res.filters if f.hidden and lq.filters.get(f.name) %}<input type="hidden" name="{{ f.name }}" value="{{ lq.filters[f.name] }}">{% endfor %}
+  {% if lq.sort %}<input type="hidden" name="sort" value="{{ lq.sort }}"><input type="hidden" name="dir" value="{{ lq.direction }}">{% endif %}
+
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    {% if lq.is_filtered %}<a class="btn" href="{{ res.base_url }}{{ lq.qs_clear() }}">Clear</a>{% endif %}
+  </div>
+</form>
+{% endif %}
+
+{% if lq.is_filtered %}
+<ul class="chips" aria-label="Applied filters">
+  {% for chip in lq.chips() %}
+  <li class="chip"><span class="chip-label">{{ chip.label }}:</span> {{ chip.value }}
+    <a class="chip-remove" href="{{ res.base_url }}{{ chip.remove_qs }}" aria-label="Remove {{ chip.label }} filter">&times;</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<section class="card table-card">
+  {% if rows %}
+  <p class="table-meta muted">Showing {{ page.start|num }}&ndash;{{ page.end|num }} of {{ page.total|num }}{% if lq.is_filtered %} matching{% endif %}</p>
+  <form id="select-form" method="get" action="{{ res.base_url }}/print" target="_blank" class="select-bar no-print">
+    {% if lq.sort %}<input type="hidden" name="sort" value="{{ lq.sort }}"><input type="hidden" name="dir" value="{{ lq.direction }}">{% endif %}
+    <button type="submit" class="btn" id="print-selected" disabled>Print selected (0)</button>
+    <span class="muted small">Tick rows below to print only those.</span>
+  </form>
+  {{ m.table(res.list_columns, rows, names, res.base_url, lq, selectable=True) }}
+  {{ m.pagination(res.base_url, page, lq) }}
+  {% elif lq.is_filtered %}
+  <div class="empty-state">
+    <h2>No matching {{ res.label|lower }}</h2>
+    <p class="muted">Nothing matches the current search and filters.</p>
+    <p><a class="btn btn-primary" href="{{ res.base_url }}{{ lq.qs_clear() }}">Clear search and filters</a></p>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h2>No {{ res.label|lower }} yet</h2>
+    <p class="muted">{% if res.can_create %}Create the first {{ res.singular }} to get started.{% else %}Records appear here as the app creates them.{% endif %}</p>
+    {% if res.can_create %}<p><a class="btn btn-primary" href="{{ res.base_url }}/new">New {{ res.singular }}</a></p>{% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

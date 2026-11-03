@@ -1,0 +1,69 @@
+{# One table cell. `col` is a resources.Column, `row` an ORM object, `names` maps user id -> name. #}
+{% macro cell(col, row, names, link_base=None) %}
+{% set v = row[col.name] %}
+{% set inner %}
+  {%- if col.kind == "read" -%}
+    {% if v is none %}<span class="badge badge-warn">Unread</span>{% else %}<span class="badge badge-ok">Read</span> <span class="muted small">{{ v|dt }}</span>{% endif %}
+  {%- elif v is none -%}<span class="muted">&mdash;</span>
+  {%- elif col.kind == "user" -%}<a href="/admin/users/{{ v }}">{{ names.get(v, (v|string)[:8]) }}</a>
+  {%- elif col.kind == "batch" -%}<a class="mono" href="/admin/batches/{{ v }}" title="{{ v }}">{{ (v|string)[:8] }}</a>
+  {%- elif col.kind == "id" -%}<span class="mono" title="{{ v }}">{{ (v|string)[:8] }}</span>
+  {%- elif col.kind == "code" -%}<span class="mono break">{{ v }}</span>
+  {%- elif col.kind == "enum" -%}<span class="badge badge-plain">{{ (v.value if v.value is defined else v)|label }}</span>
+  {%- elif col.kind == "active" -%}{% if v %}<span class="badge badge-ok">Active</span>{% else %}<span class="badge">Inactive</span>{% endif %}
+  {%- elif col.kind == "chain" -%}
+    {% set s = v.value if v.value is defined else v %}
+    {% if s == "anchored" %}<span class="badge badge-ok"><span aria-hidden="true">&#10003;</span> Anchored</span>
+    {% elif s == "failed" %}<span class="badge badge-err"><span aria-hidden="true">&#10007;</span> Failed</span>
+    {% else %}<span class="badge badge-warn"><span aria-hidden="true">&#8230;</span> Pending</span>{% endif %}
+  {%- elif col.kind == "price" -%}{{ row.currency }} {{ "{:,.2f}".format(v) }}
+  {%- elif col.kind == "kg" -%}{{ "{:,.2f}".format(v) }} kg
+  {%- elif col.kind == "date" or col.kind == "datetime" -%}<span class="nowrap">{{ v|dt }}</span>
+  {%- elif col.kind == "number" -%}{{ v }}
+  {%- else -%}{{ v }}
+  {%- endif -%}
+{% endset %}
+{%- if col.primary and link_base and v is not none -%}<a class="row-link" href="{{ link_base }}/{{ row.id }}">{{ inner }}</a>{%- else -%}{{ inner }}{%- endif -%}
+{% endmacro %}
+
+{# `lq` (a listing.ListQuery) is optional: when given, sortable headers become links. #}
+{# `selectable` adds a checkbox column bound to <form id="select-form"> (see list.html). #}
+{% macro table(columns, rows, names, link_base=None, lq=None, selectable=False) %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        {% if selectable %}<th scope="col" class="select-col no-print"><input type="checkbox" id="select-all" aria-label="Select all rows on this page"></th>{% endif %}
+        {% for col in columns %}
+        {% if lq and col.sortable %}
+        {% set active = lq.sort == col.name %}
+        <th scope="col" aria-sort="{{ ('ascending' if lq.direction == 'asc' else 'descending') if active else 'none' }}">
+          <a class="sort-link{% if active %} is-sorted{% endif %}" href="{{ lq.res.base_url }}{{ lq.sort_qs(col.name, 'desc' if col.kind in ('date', 'datetime') else 'asc') }}">{{ col.label }}<span class="sort-ind" aria-hidden="true">{% if active %}{{ ('&#9650;' if lq.direction == 'asc' else '&#9660;')|safe }}{% endif %}</span></a>
+        </th>
+        {% else %}
+        <th scope="col">{{ col.label }}</th>
+        {% endif %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% if selectable %}<td class="select-col no-print"><input type="checkbox" name="id" value="{{ row.id }}" form="select-form" aria-label="Select this row"></td>{% endif %}
+        {% for col in columns %}<td>{{ cell(col, row, names, link_base) }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% macro pagination(base_url, page, lq) %}
+{% if page.pages > 1 %}
+<nav class="pagination no-print" aria-label="Pagination">
+  {% if page.has_prev %}<a class="btn" href="{{ base_url }}{{ lq.qs(page=page.number - 1) }}" rel="prev">&larr; Previous</a>{% else %}<span class="btn is-disabled" aria-disabled="true">&larr; Previous</span>{% endif %}
+  <span class="muted">Page {{ page.number }} of {{ page.pages }}</span>
+  {% if page.has_next %}<a class="btn" href="{{ base_url }}{{ lq.qs(page=page.number + 1) }}" rel="next">Next &rarr;</a>{% else %}<span class="btn is-disabled" aria-disabled="true">Next &rarr;</span>{% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,12 @@
+[run]
+# SQLAlchemy async runs request code inside greenlets; without this, lines after an `await db...`
+# are wrongly reported as never executed.
+concurrency = greenlet,thread
+branch = True
+omit = */tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
+    raise NotImplementedError

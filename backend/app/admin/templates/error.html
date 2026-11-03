@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="card empty-state" role="alert">
+  <h2>{{ title }}</h2>
+  <p class="muted">{{ message }}</p>
+  <p><a class="btn btn-primary" href="{{ back_url }}">{{ back_label }}</a></p>
+</section>
+{% endblock %}

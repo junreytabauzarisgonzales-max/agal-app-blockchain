@@ -1,0 +1,32 @@
+{% extends "print_base.html" %}
+{% import "_macros.html" as m %}
+
+{% block heading %}{{ res.label }}{% endblock %}
+
+{% block meta %}
+<div><dt>Scope</dt><dd>{{ scope }}</dd></div>
+<div>
+  <dt>Search &amp; filters</dt>
+  <dd>{% if chips %}{% for chip in chips %}{{ chip.label }}: {{ chip.value }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None{% endif %}</dd>
+</div>
+{% if sorted_by %}<div><dt>Sorted by</dt><dd>{{ sorted_by }} ({{ "ascending" if direction == "asc" else "descending" }})</dd></div>{% endif %}
+<div>
+  <dt>Records</dt>
+  <dd>{{ shown|num }}{% if shown != total %} of {{ total|num }} matching{% endif %}</dd>
+</div>
+{% endblock %}
+
+{% block body %}
+{% if truncated %}
+<p class="callout callout-warn">
+  This report is limited to the first {{ max_rows|num }} of {{ total|num }} matching records.
+  Narrow the search or filters, or print one page at a time, to include the rest.
+</p>
+{% endif %}
+
+{% if rows %}
+{{ m.table(res.list_columns, rows, names) }}
+{% else %}
+<p class="print-empty">No records{% if chips %} match the search and filters{% endif %}.</p>
+{% endif %}
+{% endblock %}

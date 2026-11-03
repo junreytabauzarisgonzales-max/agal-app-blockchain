@@ -1,0 +1,49 @@
+{% extends "print_base.html" %}
+{% import "_macros.html" as m %}
+
+{% block heading %}{{ res.singular|capitalize }}: {{ title }}{% endblock %}
+
+{% block meta %}
+<div><dt>Report</dt><dd>Single {{ res.singular }}</dd></div>
+{% endblock %}
+
+{% block body %}
+<dl class="details print-details">
+  {% for col in res.columns %}
+  <div class="detail-row">
+    <dt>{{ col.label }}</dt>
+    <dd>{{ m.cell(col, obj, names) }}</dd>
+  </div>
+  {% endfor %}
+</dl>
+
+{% if payload_json is defined %}
+<section class="print-section">
+  <h2>Payload</h2>
+  <p class="muted small">Values under credential-like keys are redacted.</p>
+  <pre class="code-block">{{ payload_json }}</pre>
+</section>
+{% endif %}
+
+{% if message_body is defined %}
+<section class="print-section">
+  <h2>Message content</h2>
+  <p class="muted small">Private conversation. Handle and store this printout accordingly.</p>
+  <div class="message-body">{{ message_body }}</div>
+</section>
+{% endif %}
+
+{% for section in sections %}
+<section class="print-section">
+  <h2>{{ section.rel.label }} ({{ section.total|num }})</h2>
+  {% if section.rel.count_only %}
+    <p>{{ section.total|num }} message{{ '' if section.total == 1 else 's' }}. Message content is not included.</p>
+  {% elif section.rows %}
+    {{ m.table(section.columns, section.rows, names) }}
+    {% if section.total > section.rows|length %}<p class="muted small">Latest {{ section.rows|length }} of {{ section.total|num }} shown.</p>{% endif %}
+  {% else %}
+    <p class="muted">None.</p>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

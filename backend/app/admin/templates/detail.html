@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as m %}
+
+{% block actions %}
+<a class="btn" href="{{ res.base_url }}">Back to {{ res.label }}</a>
+<a class="btn" href="{{ res.base_url }}/{{ obj.id }}/print" target="_blank" rel="noopener">Print</a>
+
+{% if res.can_edit %}<a class="btn" href="{{ res.base_url }}/{{ obj.id }}/edit">Edit</a>{% endif %}
+
+{% if res.key == "users" %}
+<form method="post" action="{{ res.base_url }}/{{ obj.id }}/toggle-active"
+      {% if obj.is_active %}data-confirm="Deactivate {{ obj.full_name }}?" data-confirm-detail="They will no longer be able to use the app until reactivated." data-confirm-label="Deactivate"{% endif %}>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn">{{ "Deactivate" if obj.is_active else "Activate" }}</button>
+</form>
+{% endif %}
+
+{% if res.key == "events" %}
+<form method="post" action="{{ res.base_url }}/{{ obj.id }}/verify">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn">Verify on-chain</button>
+</form>
+{% if can_retry %}
+<form method="post" action="{{ res.base_url }}/{{ obj.id }}/retry-anchor"
+      data-confirm="Retry anchoring this event?" data-confirm-detail="This sends a new transaction from the service wallet." data-confirm-label="Retry anchor">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn">Retry anchor</button>
+</form>
+{% endif %}
+{% endif %}
+
+{% if deletable %}
+<form method="post" action="{{ res.base_url }}/{{ obj.id }}/delete"
+      data-confirm="Delete this {{ res.singular }}?" data-confirm-detail="This action cannot be undone." data-confirm-label="Delete">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <dl class="details">
+    {% for col in res.columns %}
+    <div class="detail-row">
+      <dt>{{ col.label }}</dt>
+      <dd>{{ m.cell(col, obj, names) }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+  {% if res.can_delete and not deletable %}
+  <p class="muted small note">
+    This {{ res.singular }} cannot be deleted because {{ related_total|num }} other record{{ '' if related_total == 1 else 's' }} refer to it.
+    {% if res.key == "users" %}Deactivate the account instead.{% endif %}
+  </p>
+  {% endif %}
+</section>
+
+{% if payload_json is defined %}
+<section class="card panel">
+  <h2>Payload</h2>
+  <p class="muted small">Values under credential-like keys are redacted.</p>
+  <pre class="code-block">{{ payload_json }}</pre>
+</section>
+{% endif %}
+
+{% if message_body is defined %}
+<section class="card panel">
+  <h2>Message content</h2>
+  <p class="callout callout-warn small">This is a private conversation. It is shown only on this page and is never listed or printed in bulk.</p>
+  <div class="message-body">{{ message_body }}</div>
+</section>
+{% endif %}
+
+{% for section in sections %}
+<section class="card panel">
+  <div class="section-head">
+    <h2>{{ section.rel.label }} <span class="muted">({{ section.total|num }})</span></h2>
+    {% if section.rel.filter and section.total %}<a class="btn" href="{{ section.target.base_url }}?{{ section.rel.filter }}={{ obj.id }}">View all &rarr;</a>{% endif %}
+  </div>
+  {% if section.rel.count_only %}
+    <p class="muted">{{ section.total|num }} message{{ '' if section.total == 1 else 's' }}. Message content is not listed here.</p>
+  {% elif section.rows %}
+    {{ m.table(section.columns, section.rows, names, section.target.base_url) }}
+    {% if section.total > section.rows|length %}<p class="muted small">Showing the latest {{ section.rows|length }} of {{ section.total|num }}. Use &ldquo;View all&rdquo; to see the rest.</p>{% endif %}
+  {% else %}
+    <p class="muted">None.</p>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,52 @@
+/* Printable reports. Loaded after admin.css. The sheet is always light and
+   monochrome-friendly, whatever the admin UI theme, because it is meant for paper/PDF. */
+
+body.print-doc { background: #e9ecef; color: #111; }
+
+.print-toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #c8c8c8; position: sticky; top: 0; z-index: 5; }
+
+.sheet {
+  --bg: #fff; --surface: #fff; --text: #111; --muted: #555; --border: #c8c8c8;
+  max-width: 1100px; margin: 16px auto; padding: 28px 32px; background: #fff; color: #111;
+  border: 1px solid #c8c8c8; box-shadow: 0 2px 10px rgba(0, 0, 0, .12); font-size: 14px;
+}
+.sheet a { color: inherit; text-decoration: none; }
+
+.report-org { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #555; }
+.report-head h1 { margin: 2px 0 12px; font-size: 1.6rem; }
+.report-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 24px; margin: 0 0 16px; padding: 10px 0; border-top: 1px solid #111; border-bottom: 1px solid #c8c8c8; }
+.report-meta div { display: flex; flex-direction: column; }
+.report-meta dt { font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #555; }
+.report-meta dd { margin: 0; overflow-wrap: anywhere; }
+
+.report-foot { margin-top: 24px; padding-top: 8px; border-top: 1px solid #c8c8c8; font-size: .75rem; color: #555; text-align: center; }
+.print-empty { padding: 24px 0; text-align: center; color: #555; }
+.print-section { margin-top: 22px; }
+.print-section h2 { margin: 0 0 8px; font-size: 1.05rem; }
+.print-details { margin: 0; }
+
+/* Status colours drop to plain bordered text: they must survive a black-and-white printer. */
+.sheet .badge { background: transparent; color: #111; border: 1px solid #888; font-weight: 600; }
+.sheet .callout-warn { background: #fff7e0; color: #111; border: 1px solid #c9a227; }
+.sheet .table th { color: #111; border-bottom: 2px solid #111; }
+.sheet .table td { border-bottom: 1px solid #ddd; }
+.sheet .code-block, .sheet .message-body { background: #f6f6f6; color: #111; }
+
+@page {
+  size: A4;
+  margin: 14mm 12mm 16mm;
+  /* Margin boxes: honoured by Chromium-based browsers; others simply omit the page number. */
+  @bottom-center { content: "Page " counter(page) " of " counter(pages); font: 9pt system-ui, sans-serif; color: #555; }
+}
+
+@media print {
+  body.print-doc { background: #fff; }
+  .no-print { display: none !important; }
+  .sheet { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; font-size: 10.5pt; }
+  .table-wrap { overflow: visible; }
+  .table { font-size: 9.5pt; }
+  .table thead { display: table-header-group; }   /* repeat column headers on every page */
+  .table tr, .detail-row, .print-section h2 { break-inside: avoid; }
+  .print-section { break-inside: auto; }
+  .code-block, .message-body { white-space: pre-wrap; break-inside: auto; }
+}

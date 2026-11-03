@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "fastapi",
+  "env": { "ENVIRONMENT": "production" },
+  "functions": {
+    "app/main.py": { "maxDuration": 300, "includeFiles": "app/**" }
+  },
+  "crons": [
+    { "path": "/internal/cron/chain-anchors", "schedule": "0 0 * * *" }
+  ]
+}
