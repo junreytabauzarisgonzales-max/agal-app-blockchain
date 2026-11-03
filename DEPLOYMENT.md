@@ -6,7 +6,7 @@ Solidity project are not Vercel build roots.
 | Project | Root Directory | Framework | Runtime | Build / output |
 | --- | --- | --- | --- | --- |
 | Backend API | `backend` | FastAPI | Python 3.12 | Auto-detected `app/main.py:app`; no custom output directory |
-| Website | `web` | Next.js | Node.js 22.x | `npm ci`, `npm run build`, output `out` |
+| Website | `web` | Next.js | Node.js 22.x | `npm ci`, `npm run build`; Vercel Next.js output `.next` |
 
 These paths are relative to the directory containing this file. If the Git
 repository includes an enclosing `Agal-master` folder, use `Agal-master/backend`
@@ -113,6 +113,17 @@ exceeds it remains recoverable from the committed event table.
 
 `web/vercel.json` configures the Next.js static export and clean URLs, including
 `/tutorial`, `/manual`, and `/news/...`.
+
+Use the **Next.js** framework preset and its `.next` output directory on Vercel.
+The local `out/` folder is the static export for generic static hosts; it does
+not contain the `routes-manifest.json` needed by Vercel's Next.js adapter. The
+adapter reads build metadata from `.next` and handles `output: "export"`
+automatically. Do not set Vercel's Output Directory to `out`.
+
+If an earlier deployment used `out`, open **Settings → Build and Deployment**
+and reset the Output Directory override to the Next.js default (`.next`), then
+deploy the updated commit. `web/vercel.json` explicitly selects `.next` so the
+repository configuration also corrects the previous override.
 
 Optional public build-time environment variables:
 

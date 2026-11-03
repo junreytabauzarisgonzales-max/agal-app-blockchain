@@ -1,8 +1,10 @@
 # Agal marketing site
 
 For the Vercel root-directory settings and public environment variables, see
-[DEPLOYMENT.md](../DEPLOYMENT.md). The included `vercel.json` deploys `out/`
-with clean URLs, including the screenshot tutorial at `/tutorial`.
+[DEPLOYMENT.md](../DEPLOYMENT.md). The included `vercel.json` uses Vercel's
+Next.js adapter with `.next` build metadata and clean URLs, including the
+screenshot tutorial at `/tutorial`. Do not override Vercel's Output Directory
+to `out`; the adapter handles the static export automatically.
 
 Static Next.js site (App Router) for Agal: a home page, project overview,
 a news/updates section, and download buttons for the Play Store and
