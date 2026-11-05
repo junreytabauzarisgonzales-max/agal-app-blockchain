@@ -14,16 +14,17 @@ The central message is:
 
 > Fair prices. Verified harvests. Straight from Tawi-Tawi.
 
-The website explains the product, introduces its three user roles, describes offline recording and blockchain-backed traceability, provides written and screenshot-based instructions, publishes project updates, offers an Android APK download, links to backend/contract infrastructure, and introduces the development team. Configured app-store links remain available alongside the APK.
+The website explains the product, introduces its three user roles, describes offline recording and blockchain-backed traceability, provides written and screenshot-based instructions, documents the team's journey through photographs, publishes project updates, offers an Android APK download, links to backend/contract infrastructure, and introduces the development team. Configured app-store links remain available alongside the APK.
 
 ### Current inventory
 
 | Item | Current implementation |
 | --- | --- |
-| Content pages | 12: nine main pages and three individual news articles |
+| Content pages | 13: ten main pages and three individual news articles |
 | Primary audience | Farmers, suppliers/aggregators/traders, and buyers/exporters |
 | Written manual | Three role sections, with six steps each |
 | Visual tutorial | Three role guides containing 10 screenshot walkthroughs |
+| Documentation & Our Story | Five confirmed journey chapters, 14 project photographs, and links to platform guides |
 | General FAQs | Nine; the first four also appear on the home page |
 | Tutorial help | Five additional expandable questions |
 | News | Three articles, all dated September 18, 2026 |
@@ -59,6 +60,7 @@ These are descriptions of the Agal platform. The website itself provides informa
 | --- | --- | --- | --- |
 | `/` | Home | Rotating Hero emblem, introduction, benefit badges, backend/contract cards, role cards, traceability preview, four FAQs, APK/store downloads, supporting links, and developers section | [`app/page.tsx`](app/page.tsx) |
 | `/overview` | Project overview | Problem statement, three-role explanation, tamper-evident custody history, Tawi-Tawi context, and supporting links | [`app/overview/page.tsx`](app/overview/page.tsx) |
+| `/documentation` | Documentation & Our Story | Photo-led project journey from mentoring to regional championship, trader/farmer interviews, and ongoing semifinal travel to Quezon City; platform summary and documentation links | [`app/documentation/page.tsx`](app/documentation/page.tsx) |
 | `/how-it-works` | How it works | Five-stage record pipeline and an overview of the mobile, backend, and ledger layers | [`app/how-it-works/page.tsx`](app/how-it-works/page.tsx) |
 | `/manual` | User manual | Farmer, Supplier/Aggregator, and Buyer/Exporter instructions, connectivity notes, role jump links, and a tutorial link | [`app/manual/page.tsx`](app/manual/page.tsx) |
 | `/tutorial` | App tutorial | Getting-started guidance, role selection, 10 screenshots with instructions and tips, five help questions, and download/manual calls to action | [`app/tutorial/page.tsx`](app/tutorial/page.tsx) |
@@ -72,7 +74,7 @@ These are descriptions of the Agal platform. The website itself provides informa
 
 ### Supporting routes and states
 
-- `/sitemap.xml`: includes all 12 content-page URLs.
+- `/sitemap.xml`: includes all 13 content-page URLs.
 - `/robots.txt`: permits crawling and points to the sitemap.
 - Custom 404 page: displays “Page not found” and a “Back to home” link.
 - `/#download`: jumps to the app availability section on the home page.
@@ -90,7 +92,7 @@ The home page contains the following sections, in order:
 6. **Pipeline preview:** record on the phone, synchronize, anchor event hashes, and verify history.
 7. **FAQ preview:** the first four entries from the general FAQ collection.
 8. **Download card:** direct Android APK, actual size/version, checksum, installation instructions, and the existing store slots.
-9. **Further reading:** links to the project overview, user manual, and news.
+9. **Further reading:** links to the project overview, Documentation & Our Story, user manual, and news.
 10. **Developers:** mentor Ramat Hailaya and student developers Junrey Gonzales, Krishane Ann Remonde, and Moh. Hamsya Igasan, with the supplied group photograph immediately before the footer.
 
 The decorative Hero emblem is derived from the existing app logo. It rotates every 75 seconds, has a native pause control, and becomes static for reduced-motion preferences. It does not receive pointer input.
@@ -199,7 +201,7 @@ Article pages show the date, title, body paragraphs, and a “Back to news” li
 ### Shared header
 
 - Agal text wordmark linking to the home page.
-- Desktop links: Home, Overview, How it works, Manual, Tutorial, and News.
+- Desktop links: Home, Overview, Our Story, How it works, Manual, Tutorial, and News.
 - A persistent Download button linking to `/#download`.
 - A Light/Dark/System selector that persists the visitor's preference.
 - A smaller-screen Menu disclosure containing the same navigation links.
@@ -208,7 +210,7 @@ Article pages show the date, title, body paragraphs, and a “Back to news” li
 ### Shared footer
 
 - Project description and Philippine Startup Challenge context.
-- Product links: Overview, How it works, User manual, App tutorial, FAQ, and News & updates.
+- Product links: Overview, Documentation & Our Story, How it works, User manual, App tutorial, FAQ, and News & updates.
 - Legal links: Terms of use and Privacy policy.
 - Copyright year calculated when the static page is rendered at build time.
 
@@ -218,6 +220,7 @@ Article pages show the date, title, body paragraphs, and a “Back to news” li
 - Mobile menu expansion through native `<details>`/`<summary>`.
 - Tutorial role/step jump links and “Back to role selection.”
 - Full-size screenshots opening in a new tab.
+- Story chapter jump links and larger project photographs opening in a new tab.
 - Expandable tutorial help answers.
 - External store links when their URLs are configured.
 - Direct APK and checksum downloads, with expandable installation/file details.
@@ -256,7 +259,7 @@ The artifact was copied from the existing local release APK, not rebuilt. Releas
 - Geist Sans typography with Geist Mono also configured.
 - Responsive layouts, including stacked cards on smaller screens and multi-column grids on larger screens.
 - Content widths generally use `max-w-3xl` for articles and `max-w-5xl` for broader pages.
-- Assets include app-icon-derived favicon/browser/touch icons, 10 tutorial screenshots, optimized Hero/app branding, the transparent team photograph, an APK/checksum, and five starter SVG files. The header retains its text wordmark.
+- Assets include app-icon-derived favicon/browser/touch icons, 10 tutorial screenshots, 14 project photographs (each with preview and larger WebP versions), optimized Hero/app branding, the transparent team photograph, an APK/checksum, and five starter SVG files. The header retains its text wordmark.
 
 ### Accessibility provisions visible in source
 
@@ -304,8 +307,9 @@ The platform's Flutter app, REST API/PostgreSQL backend, and Ethereum test-netwo
 - Open Graph and Twitter summary metadata are configured globally.
 - How it works, Manual, Tutorial, FAQ, Terms, Privacy, and individual news articles define page titles.
 - The tutorial also defines a page-specific description.
+- Documentation & Our Story defines its own title, description, Open Graph metadata, and Twitter large-image card using a supplied fieldwork photo.
 - Overview and the news listing currently inherit the global title.
-- No dedicated social sharing image, explicit canonical-link configuration, or structured-data markup was found in the reviewed source.
+- The story page uses a fieldwork photograph for social sharing. No explicit canonical-link configuration or structured-data markup was found in the reviewed source.
 - Sitemap static-page modification dates are generated at build time; article modification dates use the article dates.
 
 ### Site origin configuration
@@ -358,6 +362,9 @@ These observations identify the current content state and useful follow-up work;
 | --- | --- |
 | Home sections and introductory copy | [`app/page.tsx`](app/page.tsx) |
 | Project overview | [`app/overview/page.tsx`](app/overview/page.tsx) |
+| Story layout, metadata, and platform documentation hub | [`app/documentation/page.tsx`](app/documentation/page.tsx) |
+| Journey chapters, captions, alternative text, and milestone status | [`lib/documentation.ts`](lib/documentation.ts) |
+| Project photo previews, larger versions, and source mapping | [`public/documentation/`](public/documentation/) |
 | Traceability pipeline explanation | [`app/how-it-works/page.tsx`](app/how-it-works/page.tsx) |
 | Role-based written instructions | [`app/manual/page.tsx`](app/manual/page.tsx) |
 | Tutorial role guides, steps, captions, alternative text, and help questions | [`lib/tutorial.ts`](lib/tutorial.ts) |
@@ -381,3 +388,34 @@ These observations identify the current content state and useful follow-up work;
 ## 15. Review boundaries
 
 This inventory was cross-checked against website source, asset names, package versions, and hosting configuration. ESLint and the static production build passed. Headless Chrome checks covered all 12 content routes, theme persistence/system/blocked-storage behavior, simulated health-response success and failure, clipboard copying, responsive layouts, reduced motion, and no-JavaScript content. The served APK's byte count and SHA-256 matched its published metadata. It is not a claim that production matches these files or that the separate mobile workflows have passed end-to-end testing.
+
+## 16. Documentation & Our Story page
+
+The `/documentation` page adds a photo-led account of Agal's journey. The team
+confirmed this order: regional competition mentoring, regional championship,
+trader field interviews, farmer field interviews, and the ongoing trip to the
+semifinals in **Quezon City**. No event dates, interview quotations, or specific
+interview findings have been supplied. The current travel milestone is maintained
+as static content rather than a live travel feed.
+
+The page includes an introduction, purpose statement, five chapter jump links,
+14 selected photographs with captions, an ongoing-travel callout, and a platform
+summary linking to How it works, the User manual, and the App tutorial. A final
+team credit links to the home-page developers and app download sections.
+
+Photographs retain their original framing. Previews have a longest edge of at
+most 960px; linked larger WebP versions have a longest edge of at most 1600px.
+Image orientation is applied before resizing, embedded metadata is removed, and
+gallery images load lazily. The hero reuses a farmer-visit preview. The source
+mapping is documented in `public/documentation/README.md`. Chapter copy and image
+metadata are maintained in `lib/documentation.ts`; the fifth chapter can accept
+travel photographs when supplied. The page uses static rendering and native
+anchor navigation and does not require client-side scripts for its story content.
+
+Verification for this addition: ESLint and the production static export passed.
+Headless Chrome checked all 14 photographs and their 28 preview/larger assets,
+uncropped image rendering, chapter order and anchors, page/social metadata,
+sitemap inclusion, 320–1440px layouts, desktop header spacing, mobile navigation,
+keyboard focus, light/dark themes, home/story/tutorial navigation, and story
+content/navigation with JavaScript disabled. These checks are local to the built
+website; the page has not been deployed as part of this change.

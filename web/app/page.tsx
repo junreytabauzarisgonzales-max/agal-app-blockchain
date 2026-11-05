@@ -118,6 +118,10 @@ export default function Home() {
           <Link href="/overview" className="font-medium text-foreground underline">
             Read the project overview
           </Link>
+          , discover{" "}
+          <Link href="/documentation" className="font-medium text-foreground underline">
+            the story behind Agal
+          </Link>
           , walk through the{" "}
           <Link href="/manual" className="font-medium text-foreground underline">
             user manual

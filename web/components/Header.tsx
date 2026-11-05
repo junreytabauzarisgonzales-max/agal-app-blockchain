@@ -4,6 +4,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 const links = [
   { href: "/", label: "Home" },
   { href: "/overview", label: "Overview" },
+  { href: "/documentation", label: "Our Story" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/manual", label: "Manual" },
   { href: "/tutorial", label: "Tutorial" },
@@ -18,7 +19,7 @@ export default function Header() {
           Agal
         </Link>
 
-        <nav aria-label="Main navigation" className="hidden gap-5 text-sm font-medium text-zinc-600 dark:text-zinc-400 lg:flex">
+        <nav aria-label="Main navigation" className="hidden gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-400 lg:flex">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground">
               {link.label}

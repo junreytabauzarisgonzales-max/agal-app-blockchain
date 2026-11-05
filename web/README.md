@@ -20,6 +20,7 @@ CloudFront, GitHub Pages, etc.).
 
 - `app/page.tsx` -- home page.
 - `app/overview/page.tsx` -- project overview.
+- `app/documentation/page.tsx` -- photo-led Documentation & Our Story page, with five confirmed journey chapters and a platform documentation hub. Copy, captions, alternative text, and current milestone status live in `lib/documentation.ts`; photo previews and larger versions are in `public/documentation/`.
 - `app/news/page.tsx` -- news/updates, sourced from the static list in `lib/news.ts`. Add new entries at the top of that array; there's no CMS or backend involved.
 - `app/tutorial/page.tsx` -- the role-by-role screenshot tutorial, with content in `lib/tutorial.ts` and images in `public/tutorial/`.
 - `components/DownloadCard.tsx` -- renders store links configured with the `NEXT_PUBLIC_*_STORE_URL` environment variables. Unpublished listings remain "Coming soon" / "Planned" badges.
