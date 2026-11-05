@@ -1,4 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
+import ApiHealthCard from "@/components/ApiHealthCard";
+import ContractCard from "@/components/ContractCard";
+import DevelopersSection from "@/components/DevelopersSection";
 import DownloadCard from "@/components/DownloadCard";
 import FaqList from "@/components/FaqList";
 import RoleCard from "@/components/RoleCard";
@@ -15,7 +19,14 @@ const pipelinePreview = [
 export default function Home() {
   return (
     <main className="flex w-full flex-1 flex-col">
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-20 sm:py-28">
+      <section className="relative isolate mx-auto flex w-full max-w-5xl flex-col gap-6 overflow-hidden px-6 py-20 sm:py-28">
+        <input type="checkbox" id="hero-motion" className="hero-motion-toggle sr-only" aria-label="Pause decorative logo animation" />
+        <div aria-hidden="true" className="hero-artwork">
+          <Image src="/branding/agal-hero.webp" alt="" width={708} height={709} sizes="(max-width: 640px) 80vw, 544px" className="h-auto w-full" />
+        </div>
+        <label htmlFor="hero-motion" className="hero-motion-label absolute right-6 bottom-5 cursor-pointer rounded-full border border-black/10 bg-background/80 px-3 py-2 text-xs text-zinc-600 dark:border-white/15 dark:text-zinc-400">
+          <span className="motion-pause">Pause animation</span><span className="motion-resume">Resume animation</span>
+        </label>
         <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
           {SITE_TAGLINE}
         </h1>
@@ -38,6 +49,15 @@ export default function Home() {
         <Link href="/tutorial" className="mt-2 inline-flex w-fit items-center gap-3 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90">
           Learn to use the app <span aria-hidden="true">→</span>
         </Link>
+      </section>
+
+      <section aria-labelledby="platform-heading" className="mx-auto w-full max-w-5xl px-6 pb-16">
+        <h2 id="platform-heading" className="text-xl font-semibold">Connected to a verifiable record</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-zinc-400">Visit Agal&apos;s backend health endpoint and explore the deployed contract on Sepolia.</p>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <ApiHealthCard />
+          <ContractCard />
+        </div>
       </section>
 
       <section className="border-t border-black/[.08] bg-surface dark:border-white/[.145]">
@@ -109,6 +129,7 @@ export default function Home() {
           .
         </p>
       </section>
+      <DevelopersSection />
     </main>
   );
 }

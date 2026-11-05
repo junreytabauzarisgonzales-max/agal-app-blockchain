@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Approved public Android release artifacts (other APKs remain ignored).
+!/public/downloads/*.apk

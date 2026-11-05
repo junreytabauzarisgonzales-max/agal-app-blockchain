@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) { @slot; }
+  }
+}
+
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #0f172a;
   --surface: #f6f8f8;
@@ -18,11 +26,22 @@
   --font-mono: var(--font-geist-mono);
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0b1118;
+  --foreground: #edf5f3;
+  --surface: #121c26;
+  --accent: #2dd4bf;
+  --accent-foreground: #052e2b;
+}
+
+/* System colors remain usable if JavaScript is unavailable. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0f0e;
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --background: #0b1118;
     --foreground: #edf5f3;
-    --surface: #101715;
+    --surface: #121c26;
     --accent: #2dd4bf;
     --accent-foreground: #052e2b;
   }
@@ -31,4 +50,63 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+:where(a, button, select, summary, input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.theme-control { visibility: hidden; }
+[data-theme] .theme-control { visibility: visible; }
+
+#download,
+#developers-heading {
+  scroll-margin-top: 7rem;
+}
+
+.hero-artwork {
+  position: absolute;
+  z-index: -1;
+  top: 4%;
+  right: -9%;
+  width: min(80vw, 34rem);
+  pointer-events: none;
+  opacity: 0.08;
+  animation: hero-logo-rotate 75s linear infinite;
+}
+
+[data-theme="dark"] .hero-artwork {
+  opacity: 0.12;
+}
+
+.hero-motion-toggle:checked ~ .hero-artwork {
+  animation-play-state: paused;
+}
+
+.hero-motion-toggle:focus-visible ~ .hero-motion-label {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.hero-motion-toggle:checked ~ .hero-motion-label .motion-pause,
+.hero-motion-toggle:not(:checked) ~ .hero-motion-label .motion-resume {
+  display: none;
+}
+
+@keyframes hero-logo-rotate {
+  to { transform: rotate(360deg); }
+}
+
+@media (min-width: 640px) {
+  .hero-artwork {
+    top: -8%;
+    right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-artwork { animation: none; }
+  .hero-motion-toggle,
+  .hero-motion-label { display: none; }
 }
